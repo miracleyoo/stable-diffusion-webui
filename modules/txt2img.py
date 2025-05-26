@@ -11,11 +11,26 @@ from PIL import Image
 import gradio as gr
 
 
-def txt2img_create_processing(id_task: str, request: gr.Request, prompt: str, negative_prompt: str, prompt_styles, n_iter: int, batch_size: int, cfg_scale: float, height: int, width: int, enable_hr: bool, denoising_strength: float, hr_scale: float, hr_upscaler: str, hr_second_pass_steps: int, hr_resize_x: int, hr_resize_y: int, hr_checkpoint_name: str, hr_sampler_name: str, hr_scheduler: str, hr_prompt: str, hr_negative_prompt, override_settings_texts, *args, force_enable_hr=False):
+def txt2img_create_processing(id_task: str, request: gr.Request, prompt: str, negative_prompt: str, prompt_styles, n_iter: int, batch_size: int, cfg_scale: float, height: int, width: int, enable_hr: bool, denoising_strength: float, hr_scale: float, hr_upscaler: str, hr_second_pass_steps: int, hr_resize_x: int, hr_resize_y: int, hr_checkpoint_name: str, hr_sampler_name: str, hr_scheduler: str, hr_prompt: str, hr_negative_prompt, override_settings_texts, imu_data: str = None, *args, force_enable_hr=False):
     override_settings = create_override_settings_dict(override_settings_texts)
 
     if force_enable_hr:
         enable_hr = True
+
+    # Parse IMU data if provided
+    if imu_data:
+        try:
+            import numpy as np
+            import ast
+            # Convert string representation of list/array to actual numpy array
+            imu_array = np.array(ast.literal_eval(imu_data))
+            if len(imu_array.shape) != 2:
+                raise ValueError("IMU data must be a 2D array")
+            # Add IMU data to prompt
+            prompt = f"{prompt} [IMU data: {imu_array.tolist()}]"
+        except Exception as e:
+            print(f"Error parsing IMU data: {e}")
+            # Continue without IMU data if parsing fails
 
     p = processing.StableDiffusionProcessingTxt2Img(
         sd_model=shared.sd_model,

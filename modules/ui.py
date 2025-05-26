@@ -280,11 +280,13 @@ def create_ui():
 
                 scripts.scripts_txt2img.prepare_ui()
 
-                for category in ordered_ui_categories():
-                    if category == "prompt":
-                        toprow.create_inline_toprow_prompts()
+                with gr.Row(elem_id=f"{txt2img_generation_tab}_prompt_row", elem_classes=["prompt-row"]):
+                    toprow.prompt = gr.Textbox(label="Prompt", elem_id=f"{txt2img_generation_tab}_prompt", show_label=False, lines=3, placeholder="Prompt\n(Press Ctrl+Enter to generate, Alt+Enter to skip, Esc to interrupt)", elem_classes=["prompt"])
+                    toprow.prompt_img = gr.File(label="", elem_id=f"{txt2img_generation_tab}_prompt_image", file_count="single", type="binary", visible=False)
+                    toprow.imu_input = gr.Textbox(label="IMU Data", elem_id=f"{txt2img_generation_tab}_imu", show_label=True, lines=1, placeholder="Enter 2D numpy array or list for IMU data", elem_classes=["imu-input"])
 
-                    elif category == "dimensions":
+                for category in ordered_ui_categories():
+                    if category == "dimensions":
                         with FormRow():
                             with gr.Column(elem_id="txt2img_column_size", scale=4):
                                 width = gr.Slider(minimum=64, maximum=2048, step=8, label="Width", value=512, elem_id="txt2img_width")
@@ -401,6 +403,7 @@ def create_ui():
                 hr_prompt,
                 hr_negative_prompt,
                 override_settings,
+                toprow.imu_input,
             ] + custom_inputs
 
             txt2img_outputs = [
@@ -447,6 +450,7 @@ def create_ui():
             txt2img_paste_fields = [
                 PasteField(toprow.prompt, "Prompt", api="prompt"),
                 PasteField(toprow.negative_prompt, "Negative prompt", api="negative_prompt"),
+                PasteField(toprow.imu_input, "IMU Data", api="imu_data"),
                 PasteField(cfg_scale, "CFG scale", api="cfg_scale"),
                 PasteField(width, "Size-1", api="width"),
                 PasteField(height, "Size-2", api="height"),

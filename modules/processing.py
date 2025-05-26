@@ -141,6 +141,7 @@ class StableDiffusionProcessing:
     prompt: str = ""
     prompt_for_display: str = None
     negative_prompt: str = ""
+    imu_data: str = None
     styles: list[str] = None
     seed: int = -1
     subseed: int = -1
