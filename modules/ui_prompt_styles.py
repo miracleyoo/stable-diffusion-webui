@@ -54,10 +54,11 @@ def refresh_styles():
 
 
 class UiPromptStyles:
-    def __init__(self, tabname, main_ui_prompt, main_ui_negative_prompt):
+    def __init__(self, tabname, main_ui_prompt, main_ui_negative_prompt, main_ui_imu_input):
         self.tabname = tabname
         self.main_ui_prompt = main_ui_prompt
         self.main_ui_negative_prompt = main_ui_negative_prompt
+        self.main_ui_imu_input = main_ui_imu_input
 
         with gr.Row(elem_id=f"{tabname}_styles_row"):
             self.dropdown = gr.Dropdown(label="Styles", show_label=False, elem_id=f"{tabname}_styles", choices=list(shared.prompt_styles.styles), value=[], multiselect=True, tooltip="Styles")
@@ -77,6 +78,9 @@ class UiPromptStyles:
                 self.neg_prompt = gr.Textbox(label="Negative prompt", show_label=True, elem_id=f"{tabname}_edit_style_neg_prompt", lines=3, elem_classes=["prompt"])
 
             with gr.Row():
+                self.imu_input = gr.Textbox(label="IMU Data", show_label=True, elem_id=f"{tabname}_edit_style_imu", lines=1, elem_classes=["imu-input"])
+
+            with gr.Row():
                 self.save = gr.Button('Save', variant='primary', elem_id=f'{tabname}_edit_style_save', visible=False)
                 self.delete = gr.Button('Delete', variant='primary', elem_id=f'{tabname}_edit_style_delete', visible=False)
                 self.close = gr.Button('Close', variant='secondary', elem_id=f'{tabname}_edit_style_close')
@@ -84,13 +88,13 @@ class UiPromptStyles:
         self.selection.change(
             fn=select_style,
             inputs=[self.selection],
-            outputs=[self.prompt, self.neg_prompt, self.delete, self.save],
+            outputs=[self.prompt, self.neg_prompt, self.imu_input, self.delete, self.save],
             show_progress=False,
         )
 
         self.save.click(
             fn=save_style,
-            inputs=[self.selection, self.prompt, self.neg_prompt],
+            inputs=[self.selection, self.prompt, self.neg_prompt, self.imu_input],
             outputs=[self.delete],
             show_progress=False,
         ).then(refresh_styles, outputs=[self.dropdown, self.selection], show_progress=False)
@@ -99,16 +103,16 @@ class UiPromptStyles:
             fn=delete_style,
             _js='function(name){ if(name == "") return ""; return confirm("Delete style " + name + "?") ? name : ""; }',
             inputs=[self.selection],
-            outputs=[self.selection, self.prompt, self.neg_prompt],
+            outputs=[self.selection, self.prompt, self.neg_prompt, self.imu_input],
             show_progress=False,
         ).then(refresh_styles, outputs=[self.dropdown, self.selection], show_progress=False)
 
         self.setup_apply_button(self.materialize)
 
         self.copy.click(
-            fn=lambda p, n: (p, n),
-            inputs=[main_ui_prompt, main_ui_negative_prompt],
-            outputs=[self.prompt, self.neg_prompt],
+            fn=lambda p, n, i: (p, n, i),
+            inputs=[main_ui_prompt, main_ui_negative_prompt, main_ui_imu_input],
+            outputs=[self.prompt, self.neg_prompt, self.imu_input],
             show_progress=False,
         )
 

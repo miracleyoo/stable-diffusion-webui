@@ -86,6 +86,9 @@ class Toprow:
             with gr.Row(elem_id=f"{self.id_part}_neg_prompt_row", elem_classes=["prompt-row"]):
                 self.negative_prompt = gr.Textbox(label="Negative prompt", elem_id=f"{self.id_part}_neg_prompt", show_label=False, lines=3, placeholder="Negative prompt\n(Press Ctrl+Enter to generate, Alt+Enter to skip, Esc to interrupt)", elem_classes=["prompt"])
 
+            with gr.Row(elem_id=f"{self.id_part}_imu_row", elem_classes=["prompt-row"]):
+                self.imu_input = gr.Textbox(label="IMU Data", elem_id=f"{self.id_part}_imu", show_label=True, lines=1, placeholder="Enter 2D numpy array or list for IMU data", elem_classes=["imu-input"])
+
         self.prompt_img.change(
             fn=modules.images.image_data,
             inputs=[self.prompt_img],
@@ -135,10 +138,10 @@ class Toprow:
             self.clear_prompt_button.click(
                 fn=lambda *x: x,
                 _js="confirm_clear_prompt",
-                inputs=[self.prompt, self.negative_prompt],
-                outputs=[self.prompt, self.negative_prompt],
+                inputs=[self.prompt, self.negative_prompt, self.imu_input],
+                outputs=[self.prompt, self.negative_prompt, self.imu_input],
             )
 
     def create_styles_ui(self):
-        self.ui_styles = ui_prompt_styles.UiPromptStyles(self.id_part, self.prompt, self.negative_prompt)
+        self.ui_styles = ui_prompt_styles.UiPromptStyles(self.id_part, self.prompt, self.negative_prompt, self.imu_input)
         self.ui_styles.setup_apply_button(self.apply_styles)

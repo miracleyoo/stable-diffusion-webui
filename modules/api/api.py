@@ -465,6 +465,7 @@ class Api:
         add_task_to_queue(task_id)
 
         with self.queue_lock:
+            print(args)
             with closing(StableDiffusionProcessingTxt2Img(sd_model=shared.sd_model, **args)) as p:
                 p.is_api = True
                 p.scripts = script_runner

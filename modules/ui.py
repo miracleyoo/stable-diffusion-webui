@@ -280,13 +280,18 @@ def create_ui():
 
                 scripts.scripts_txt2img.prepare_ui()
 
-                with gr.Row(elem_id=f"{txt2img_generation_tab}_prompt_row", elem_classes=["prompt-row"]):
-                    toprow.prompt = gr.Textbox(label="Prompt", elem_id=f"{txt2img_generation_tab}_prompt", show_label=False, lines=3, placeholder="Prompt\n(Press Ctrl+Enter to generate, Alt+Enter to skip, Esc to interrupt)", elem_classes=["prompt"])
-                    toprow.prompt_img = gr.File(label="", elem_id=f"{txt2img_generation_tab}_prompt_image", file_count="single", type="binary", visible=False)
-                    toprow.imu_input = gr.Textbox(label="IMU Data", elem_id=f"{txt2img_generation_tab}_imu", show_label=True, lines=1, placeholder="Enter 2D numpy array or list for IMU data", elem_classes=["imu-input"])
-
                 for category in ordered_ui_categories():
-                    if category == "dimensions":
+                    if category == "prompt":
+                        toprow.create_inline_toprow_prompts()
+
+                    elif category == "dimensions":
+                # with gr.Row(elem_id=f"{txt2img_generation_tab}_prompt_row", elem_classes=["prompt-row"]):
+                #     toprow.prompt = gr.Textbox(label="Prompt", elem_id=f"{txt2img_generation_tab}_prompt", show_label=False, lines=3, placeholder="Prompt\n(Press Ctrl+Enter to generate, Alt+Enter to skip, Esc to interrupt)", elem_classes=["prompt"])
+                #     toprow.prompt_img = gr.File(label="", elem_id=f"{txt2img_generation_tab}_prompt_image", file_count="single", type="binary", visible=False)
+                #     toprow.imu_input = gr.Textbox(label="IMU Data", elem_id=f"{txt2img_generation_tab}_imu", show_label=True, lines=1, placeholder="Enter 2D numpy array or list for IMU data", elem_classes=["imu-input"])
+
+                # for category in ordered_ui_categories():
+                    # if category == "dimensions":
                         with FormRow():
                             with gr.Column(elem_id="txt2img_column_size", scale=4):
                                 width = gr.Slider(minimum=64, maximum=2048, step=8, label="Width", value=512, elem_id="txt2img_width")
