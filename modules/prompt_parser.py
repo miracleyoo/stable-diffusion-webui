@@ -152,9 +152,12 @@ class SdConditioning(list):
         self.width = width or getattr(copy_from, 'width', None)
         self.height = height or getattr(copy_from, 'height', None)
 
+def get_imu_conditioning(model, imu_data):
+    imu_conds = model.get_learned_conditioning(imu_data)
+    return imu_conds
 
 
-def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, hires_steps=None, use_old_scheduling=False):
+def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, hires_steps=None, use_old_scheduling=False, imu_data=None):
     """converts a list of prompts into a list of prompt schedules - each schedule is a list of ScheduledPromptConditioning, specifying the comdition (cond),
     and the sampling step at which this condition is to be replaced by the next one.
 
@@ -186,6 +189,10 @@ def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, 
 
         texts = SdConditioning([x[1] for x in prompt_schedule], copy_from=prompts)
         conds = model.get_learned_conditioning(texts)
+        
+        if imu_data is not None:
+            imu_conds = model.get_learned_conditioning(imu_data)
+            conds = (imu_conds + conds) / 2
 
         cond_schedule = []
         for i, (end_at_step, _) in enumerate(prompt_schedule):
