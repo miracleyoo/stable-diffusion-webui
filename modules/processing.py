@@ -30,6 +30,7 @@ import modules.sd_models as sd_models
 import modules.sd_vae as sd_vae
 from ldm.data.util import AddMiDaS
 from ldm.models.diffusion.ddpm import LatentDepth2ImageDiffusion
+from ImageBind.imagebind.imu.imu_encoder import IMUEncoderQuick
 
 from einops import repeat, rearrange
 from blendmodes.blend import blendLayers, BlendType
@@ -136,6 +137,7 @@ def txt2img_image_conditioning(sd_model, x, width, height):
 @dataclass(repr=False)
 class StableDiffusionProcessing:
     sd_model: object = None
+    imu_encoder: object = None
     outpath_samples: str = None
     outpath_grids: str = None
     prompt: str = ""
@@ -251,6 +253,8 @@ class StableDiffusionProcessing:
 
         self.cached_uc = StableDiffusionProcessing.cached_uc
         self.cached_c = StableDiffusionProcessing.cached_c
+
+        self.imu_encoder = IMUEncoderQuick()
 
     def fill_fields_from_opts(self):
         self.s_min_uncond = self.s_min_uncond if self.s_min_uncond is not None else opts.s_min_uncond
@@ -458,7 +462,7 @@ class StableDiffusionProcessing:
             opts.emphasis,
         )
 
-    def get_conds_with_caching(self, function, required_prompts, steps, caches, extra_network_data, hires_steps=None):
+    def get_conds_with_caching(self, function, required_prompts, steps, caches, extra_network_data, hires_steps=None, imu_data=None):
         """
         Returns the result of calling function(shared.sd_model, required_prompts, steps)
         using a cache to store the result if the same arguments have been used before.
@@ -486,7 +490,7 @@ class StableDiffusionProcessing:
         cache = caches[0]
 
         with devices.autocast():
-            cache[1] = function(shared.sd_model, required_prompts, steps, hires_steps, shared.opts.use_old_scheduling)
+            cache[1] = function(shared.sd_model, required_prompts, steps, hires_steps, shared.opts.use_old_scheduling, imu_data)
 
         cache[0] = cached_params
         return cache[1]
@@ -500,8 +504,10 @@ class StableDiffusionProcessing:
         self.step_multiplier = total_steps // self.steps
         self.firstpass_steps = total_steps
 
-        self.uc = self.get_conds_with_caching(prompt_parser.get_learned_conditioning, negative_prompts, total_steps, [self.cached_uc], self.extra_network_data)
-        self.c = self.get_conds_with_caching(prompt_parser.get_multicond_learned_conditioning, prompts, total_steps, [self.cached_c], self.extra_network_data)
+        self.uc = self.get_conds_with_caching(prompt_parser.get_learned_conditioning, negative_prompts, total_steps, [self.cached_uc], self.extra_network_data, self.imu_encoder)
+        self.c = self.get_conds_with_caching(prompt_parser.get_multicond_learned_conditioning, prompts, total_steps, [self.cached_c], self.extra_network_data, self.imu_encoder)
+
+        print("imu_data:", self.imu_data)
 
     def get_conds(self):
         return self.c, self.uc

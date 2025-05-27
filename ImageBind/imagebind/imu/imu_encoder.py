@@ -3,7 +3,7 @@ import torch.nn as nn
 from imagebind.models import imagebind_model
 # from imagebind.models.imagebind_model import ModalityType
 from types import SimpleNamespace
-
+import os
 ModalityType = SimpleNamespace(
     VISION="vision",
     TEXT="text",
@@ -61,9 +61,12 @@ class IMUEncoder(nn.Module):
 
 class IMUEncoderQuick(nn.Module):
     """A lightweight version of IMUEncoder that directly loads the pruned model."""
-    def __init__(self, model_path=".checkpoints/imu_encoder.pth", device=None):
+    def __init__(self, model_path=None, device=None):
         super().__init__()
         self.device = device if device is not None else ("cuda" if torch.cuda.is_available() else "cpu")
+        if model_path is None:
+            model_path = os.path.join(os.path.dirname(__file__), "..", "..", ".checkpoints", "imu_encoder.pth")
+            print("model_path:", model_path)
         
         # Create minimal model structure
         self.model = imagebind_model.imagebind_huge(pretrained=False)
