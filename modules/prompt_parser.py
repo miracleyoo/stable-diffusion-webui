@@ -152,7 +152,7 @@ class SdConditioning(list):
         self.width = width or getattr(copy_from, 'width', None)
         self.height = height or getattr(copy_from, 'height', None)
 
-def get_imu_conditioning(model, imu_data):
+def get_imu_conditioning(imu_data):
     imu_conds = model.get_learned_conditioning(imu_data)
     return imu_conds
 
@@ -191,7 +191,7 @@ def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, 
         conds = model.get_learned_conditioning(texts)
         
         if imu_data is not None:
-            imu_conds = model.get_learned_conditioning(imu_data)
+            imu_conds = get_imu_conditioning(imu_data)
             conds = (imu_conds + conds) / 2
 
         cond_schedule = []
@@ -256,7 +256,7 @@ class MulticondLearnedConditioning:
         self.batch: list[list[ComposableScheduledPromptConditioning]] = batch
 
 
-def get_multicond_learned_conditioning(model, prompts, steps, hires_steps=None, use_old_scheduling=False) -> MulticondLearnedConditioning:
+def get_multicond_learned_conditioning(model, prompts, steps, hires_steps=None, use_old_scheduling=False, imu_data=None) -> MulticondLearnedConditioning:
     """same as get_learned_conditioning, but returns a list of ScheduledPromptConditioning along with the weight objects for each prompt.
     For each prompt, the list is obtained by splitting the prompt using the AND separator.
 
@@ -265,7 +265,7 @@ def get_multicond_learned_conditioning(model, prompts, steps, hires_steps=None, 
 
     res_indexes, prompt_flat_list, prompt_indexes = get_multicond_prompt_list(prompts)
 
-    learned_conditioning = get_learned_conditioning(model, prompt_flat_list, steps, hires_steps, use_old_scheduling)
+    learned_conditioning = get_learned_conditioning(model, prompt_flat_list, steps, hires_steps, use_old_scheduling, imu_data)
 
     res = []
     for indexes in res_indexes:

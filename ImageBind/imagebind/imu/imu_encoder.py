@@ -1,7 +1,17 @@
 import torch
 import torch.nn as nn
 from imagebind.models import imagebind_model
-from imagebind.models.imagebind_model import ModalityType
+# from imagebind.models.imagebind_model import ModalityType
+from types import SimpleNamespace
+
+ModalityType = SimpleNamespace(
+    VISION="vision",
+    TEXT="text",
+    AUDIO="audio",
+    THERMAL="thermal",
+    DEPTH="depth",
+    IMU="imu",
+)
 
 class IMUEncoder(nn.Module):
     def __init__(self, pretrained_path=None):
