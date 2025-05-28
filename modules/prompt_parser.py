@@ -235,7 +235,7 @@ def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, 
         if imu_data is not None:
             print("> IMU data used in generating the conditioning.")
             imu_conds = get_imu_conditioning(imu_data, imu_encoder)
-            conds = imu_conds * 0.1 + conds * 0.9
+            conds = imu_conds * 0.2 + conds * 0.8
 
         cond_schedule = []
         for i, (end_at_step, _) in enumerate(prompt_schedule):
