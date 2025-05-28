@@ -462,7 +462,7 @@ class StableDiffusionProcessing:
             opts.emphasis,
         )
 
-    def get_conds_with_caching(self, function, required_prompts, steps, caches, extra_network_data, hires_steps=None, imu_data=None):
+    def get_conds_with_caching(self, function, required_prompts, steps, caches, extra_network_data, hires_steps=None, imu_data=None, imu_encoder=None):
         """
         Returns the result of calling function(shared.sd_model, required_prompts, steps)
         using a cache to store the result if the same arguments have been used before.
@@ -489,8 +489,11 @@ class StableDiffusionProcessing:
 
         cache = caches[0]
 
+        print("imu_data in get_conds_with_caching:", imu_data)
+        # print("imu_encoder in get_conds_with_caching:", imu_encoder)
+
         with devices.autocast():
-            cache[1] = function(shared.sd_model, required_prompts, steps, hires_steps, shared.opts.use_old_scheduling, imu_data)
+            cache[1] = function(shared.sd_model, required_prompts, steps, hires_steps, shared.opts.use_old_scheduling, imu_data, imu_encoder)
 
         cache[0] = cached_params
         return cache[1]
@@ -498,16 +501,20 @@ class StableDiffusionProcessing:
     def setup_conds(self):
         prompts = prompt_parser.SdConditioning(self.prompts, width=self.width, height=self.height)
         negative_prompts = prompt_parser.SdConditioning(self.negative_prompts, width=self.width, height=self.height, is_negative_prompt=True)
+        print("imu_data in setup_conds:", self.imu_data)
+        print("prompts in setup_conds:", prompts)
+        print("negative_prompts in setup_conds:", negative_prompts)
+        # print("imu_encoder in setup_conds:", self.imu_encoder)
 
         sampler_config = sd_samplers.find_sampler_config(self.sampler_name)
         total_steps = sampler_config.total_steps(self.steps) if sampler_config else self.steps
         self.step_multiplier = total_steps // self.steps
         self.firstpass_steps = total_steps
 
-        self.uc = self.get_conds_with_caching(prompt_parser.get_learned_conditioning, negative_prompts, total_steps, [self.cached_uc], self.extra_network_data, self.imu_encoder)
-        self.c = self.get_conds_with_caching(prompt_parser.get_multicond_learned_conditioning, prompts, total_steps, [self.cached_c], self.extra_network_data, self.imu_encoder)
+        self.uc = self.get_conds_with_caching(prompt_parser.get_learned_conditioning, negative_prompts, total_steps, [self.cached_uc], self.extra_network_data)
+        self.c = self.get_conds_with_caching(prompt_parser.get_multicond_learned_conditioning, prompts, total_steps, [self.cached_c], self.extra_network_data, 
+                                             imu_data=self.imu_data, imu_encoder=self.imu_encoder)
 
-        print("imu_data:", self.imu_data)
 
     def get_conds(self):
         return self.c, self.uc

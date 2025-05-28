@@ -66,7 +66,7 @@ class IMUEncoderQuick(nn.Module):
         self.device = device if device is not None else ("cuda" if torch.cuda.is_available() else "cpu")
         if model_path is None:
             model_path = os.path.join(os.path.dirname(__file__), "..", "..", ".checkpoints", "imu_encoder.pth")
-            print("model_path:", model_path)
+            # print("model_path:", model_path)
         
         # Create minimal model structure
         self.model = imagebind_model.imagebind_huge(pretrained=False)
