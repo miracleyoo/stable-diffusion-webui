@@ -490,7 +490,7 @@ class StableDiffusionProcessing:
 
         cache = caches[0]
 
-        print("imu_data in get_conds_with_caching:", imu_data)
+        # print("imu_data in get_conds_with_caching:", imu_data)
         # print("imu_encoder in get_conds_with_caching:", imu_encoder)
 
         with devices.autocast():
@@ -502,9 +502,9 @@ class StableDiffusionProcessing:
     def setup_conds(self):
         prompts = prompt_parser.SdConditioning(self.prompts, width=self.width, height=self.height)
         negative_prompts = prompt_parser.SdConditioning(self.negative_prompts, width=self.width, height=self.height, is_negative_prompt=True)
-        print("imu_data in setup_conds:", self.imu_input)
-        print("prompts in setup_conds:", prompts)
-        print("negative_prompts in setup_conds:", negative_prompts)
+        # print("imu_data in setup_conds:", self.imu_input)
+        # print("prompts in setup_conds:", prompts)
+        # print("negative_prompts in setup_conds:", negative_prompts)
         # print("imu_encoder in setup_conds:", self.imu_encoder)
 
         sampler_config = sd_samplers.find_sampler_config(self.sampler_name)

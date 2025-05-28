@@ -233,7 +233,7 @@ def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, 
         
         print("> IMU data:", imu_data, "type:", type(imu_data))
         if imu_data is not None:
-            print("> IMU data used in generating the conditioning.")
+            print("> IMU data used in generating the conditioning. Imu ratio:", imu_ratio)
             imu_conds = get_imu_conditioning(imu_data, imu_encoder)
             conds = imu_conds * imu_ratio + conds * (1 - imu_ratio)
 
