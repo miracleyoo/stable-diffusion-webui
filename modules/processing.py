@@ -443,7 +443,7 @@ class StableDiffusionProcessing:
         self.main_prompt = self.all_prompts[0]
         self.main_negative_prompt = self.all_negative_prompts[0]
 
-    def cached_params(self, required_prompts, steps, extra_network_data, hires_steps=None, use_old_scheduling=False):
+    def cached_params(self, required_prompts, steps, extra_network_data, hires_steps=None, use_old_scheduling=False, imu_ratio=None, imu_data=None):
         """Returns parameters that invalidate the cond cache if changed"""
 
         return (
@@ -461,6 +461,8 @@ class StableDiffusionProcessing:
             opts.fp8_storage,
             opts.cache_fp16_weight,
             opts.emphasis,
+            imu_ratio,
+            imu_data,
         )
 
     def get_conds_with_caching(self, function, required_prompts, steps, caches, extra_network_data, hires_steps=None, imu_data=None, imu_encoder=None, imu_ratio=None):
@@ -482,7 +484,7 @@ class StableDiffusionProcessing:
             if old_schedules != new_schedules:
                 self.extra_generation_params["Old prompt editing timelines"] = True
 
-        cached_params = self.cached_params(required_prompts, steps, extra_network_data, hires_steps, shared.opts.use_old_scheduling)
+        cached_params = self.cached_params(required_prompts, steps, extra_network_data, hires_steps, shared.opts.use_old_scheduling, imu_ratio, imu_data)
 
         for cache in caches:
             if cache[0] is not None and cached_params == cache[0]:
