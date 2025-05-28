@@ -13,6 +13,7 @@ def simple_txt2img_request():
     return {
         "batch_size": 1,
         "cfg_scale": 7,
+        "imu_ratio": 0.2,
         "denoising_strength": 0,
         "enable_hr": False,
         "eta": 0,

@@ -13,6 +13,7 @@ def simple_img2img_request(img2img_basic_image_base64):
     return {
         "batch_size": 1,
         "cfg_scale": 7,
+        "imu_ratio": 0.2,
         "denoising_strength": 0.75,
         "eta": 0,
         "height": 64,

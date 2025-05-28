@@ -189,7 +189,7 @@ def resize_to_target_length(data: np.ndarray, target_len: int = 2000) -> np.ndar
 
 
 def get_imu_conditioning(imu_data, imu_encoder):
-    print("imu_data inner:", imu_data)
+    # print("imu_data inner:", imu_data)
     if type(imu_data) == str:
         imu_data = np.array(ast.literal_eval(imu_data))
     imu_data = resize_to_target_length(imu_data)
@@ -231,8 +231,8 @@ def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, 
         texts = SdConditioning([x[1] for x in prompt_schedule], copy_from=prompts)
         conds = model.get_learned_conditioning(texts)
         
-        print("> IMU data:", imu_data, "type:", type(imu_data))
-        if imu_data is not None:
+        # print("> IMU data:", imu_data, "type:", type(imu_data))
+        if imu_data is not None and imu_ratio is not None and imu_ratio > 0:
             print("> IMU data used in generating the conditioning. Imu ratio:", imu_ratio)
             imu_conds = get_imu_conditioning(imu_data, imu_encoder)
             conds = imu_conds * imu_ratio + conds * (1 - imu_ratio)
@@ -308,7 +308,7 @@ def get_multicond_learned_conditioning(model, prompts, steps, hires_steps=None, 
 
     res_indexes, prompt_flat_list, prompt_indexes = get_multicond_prompt_list(prompts)
     
-    print("imu_data in get_multicond_learned_conditioning:", imu_data)
+    # print("imu_data in get_multicond_learned_conditioning:", imu_data)
     # print("imu_encoder in get_multicond_learned_conditioning:", imu_encoder)
 
     learned_conditioning = get_learned_conditioning(model, prompt_flat_list, steps, hires_steps, use_old_scheduling, imu_data, imu_encoder, imu_ratio)

@@ -28,6 +28,10 @@ def process_float_tag(tag):
     return float(tag)
 
 
+def process_imu_ratio_tag(tag):
+    return float(tag)
+
+
 def process_boolean_tag(tag):
     return True if (tag == "true") else False
 
@@ -51,6 +55,7 @@ prompt_tags = {
     "n_iter": process_int_tag,
     "steps": process_int_tag,
     "cfg_scale": process_float_tag,
+    "imu_ratio": process_float_tag,
     "width": process_int_tag,
     "height": process_int_tag,
     "restore_faces": process_boolean_tag,

@@ -533,6 +533,7 @@ class Processed:
         self.images = images_list
         self.prompt = p.prompt
         self.negative_prompt = p.negative_prompt
+        self.imu_input = p.imu_input
         self.seed = seed
         self.subseed = subseed
         self.subseed_strength = p.subseed_strength
@@ -542,6 +543,7 @@ class Processed:
         self.height = p.height
         self.sampler_name = p.sampler_name
         self.cfg_scale = p.cfg_scale
+        self.imu_ratio = p.imu_ratio
         self.image_cfg_scale = getattr(p, 'image_cfg_scale', None)
         self.steps = p.steps
         self.batch_size = p.batch_size
@@ -589,6 +591,7 @@ class Processed:
             "all_prompts": self.all_prompts,
             "negative_prompt": self.all_negative_prompts[0],
             "all_negative_prompts": self.all_negative_prompts,
+            "imu_input": self.imu_input,
             "seed": self.seed,
             "all_seeds": self.all_seeds,
             "subseed": self.subseed,
@@ -598,6 +601,7 @@ class Processed:
             "height": self.height,
             "sampler_name": self.sampler_name,
             "cfg_scale": self.cfg_scale,
+            "imu_ratio": self.imu_ratio,
             "steps": self.steps,
             "batch_size": self.batch_size,
             "restore_faces": self.restore_faces,
@@ -787,6 +791,7 @@ def create_infotext(p, all_prompts, all_seeds, all_subseeds, comments=None, iter
         "Sampler": p.sampler_name,
         "Schedule type": p.scheduler,
         "CFG scale": p.cfg_scale,
+        "IMU ratio": p.imu_ratio,
         "Image CFG scale": getattr(p, 'image_cfg_scale', None),
         "Seed": p.all_seeds[0] if use_main_prompt else all_seeds[index],
         "Face restoration": opts.face_restoration_model if p.restore_faces else None,
