@@ -285,13 +285,6 @@ def create_ui():
                         toprow.create_inline_toprow_prompts()
 
                     elif category == "dimensions":
-                # with gr.Row(elem_id=f"{txt2img_generation_tab}_prompt_row", elem_classes=["prompt-row"]):
-                #     toprow.prompt = gr.Textbox(label="Prompt", elem_id=f"{txt2img_generation_tab}_prompt", show_label=False, lines=3, placeholder="Prompt\n(Press Ctrl+Enter to generate, Alt+Enter to skip, Esc to interrupt)", elem_classes=["prompt"])
-                #     toprow.prompt_img = gr.File(label="", elem_id=f"{txt2img_generation_tab}_prompt_image", file_count="single", type="binary", visible=False)
-                #     toprow.imu_input = gr.Textbox(label="IMU Data", elem_id=f"{txt2img_generation_tab}_imu", show_label=True, lines=1, placeholder="Enter 2D numpy array or list for IMU data", elem_classes=["imu-input"])
-
-                # for category in ordered_ui_categories():
-                    # if category == "dimensions":
                         with FormRow():
                             with gr.Column(elem_id="txt2img_column_size", scale=4):
                                 width = gr.Slider(minimum=64, maximum=2048, step=8, label="Width", value=512, elem_id="txt2img_width")
@@ -308,6 +301,10 @@ def create_ui():
                     elif category == "cfg":
                         with gr.Row():
                             cfg_scale = gr.Slider(minimum=1.0, maximum=30.0, step=0.5, label='CFG Scale', value=7.0, elem_id="txt2img_cfg_scale")
+
+                    elif category == "imu_ratio":
+                        with gr.Row():
+                            imu_ratio = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label='IMU Ratio', value=0.2, elem_id="txt2img_imu_ratio")
 
                     elif category == "checkboxes":
                         with FormRow(elem_classes="checkboxes-row", variant="compact"):
@@ -393,6 +390,7 @@ def create_ui():
                 batch_count,
                 batch_size,
                 cfg_scale,
+                imu_ratio,
                 height,
                 width,
                 enable_hr,
@@ -457,6 +455,7 @@ def create_ui():
                 PasteField(toprow.negative_prompt, "Negative prompt", api="negative_prompt"),
                 PasteField(toprow.imu_input, "IMU Data", api="imu_data"),
                 PasteField(cfg_scale, "CFG scale", api="cfg_scale"),
+                PasteField(imu_ratio, "IMU Ratio", api="imu_ratio"),
                 PasteField(width, "Size-1", api="width"),
                 PasteField(height, "Size-2", api="height"),
                 PasteField(batch_size, "Batch size", api="batch_size"),
@@ -490,6 +489,7 @@ def create_ui():
                 steps,
                 scripts.scripts_txt2img.script('Sampler').sampler_name,
                 cfg_scale,
+                imu_ratio,
                 scripts.scripts_txt2img.script('Seed').seed,
                 width,
                 height,
@@ -676,6 +676,10 @@ def create_ui():
                             cfg_scale = gr.Slider(minimum=1.0, maximum=30.0, step=0.5, label='CFG Scale', value=7.0, elem_id="img2img_cfg_scale")
                             image_cfg_scale = gr.Slider(minimum=0, maximum=3.0, step=0.05, label='Image CFG Scale', value=1.5, elem_id="img2img_image_cfg_scale", visible=False)
 
+                    elif category == "imu_ratio":
+                        with gr.Row():
+                            imu_ratio = gr.Slider(minimum=0.0, maximum=1.0, step=0.01, label='IMU Ratio', value=0.2, elem_id="img2img_imu_ratio")
+
                     elif category == "checkboxes":
                         with FormRow(elem_classes="checkboxes-row", variant="compact"):
                             pass
@@ -761,6 +765,7 @@ def create_ui():
                     batch_size,
                     cfg_scale,
                     image_cfg_scale,
+                    imu_ratio,
                     denoising_strength,
                     selected_scale_tab,
                     height,
@@ -852,6 +857,7 @@ def create_ui():
                 (toprow.negative_prompt, "Negative prompt"),
                 (cfg_scale, "CFG scale"),
                 (image_cfg_scale, "Image CFG scale"),
+                (imu_ratio, "IMU Ratio"),
                 (width, "Size-1"),
                 (height, "Size-2"),
                 (batch_size, "Batch size"),

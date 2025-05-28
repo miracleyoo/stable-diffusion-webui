@@ -144,6 +144,7 @@ class StableDiffusionProcessing:
     prompt_for_display: str = None
     negative_prompt: str = ""
     imu_input: str = None
+    imu_ratio: float = 0.2
     styles: list[str] = None
     seed: int = -1
     subseed: int = -1
@@ -462,7 +463,7 @@ class StableDiffusionProcessing:
             opts.emphasis,
         )
 
-    def get_conds_with_caching(self, function, required_prompts, steps, caches, extra_network_data, hires_steps=None, imu_data=None, imu_encoder=None):
+    def get_conds_with_caching(self, function, required_prompts, steps, caches, extra_network_data, hires_steps=None, imu_data=None, imu_encoder=None, imu_ratio=None):
         """
         Returns the result of calling function(shared.sd_model, required_prompts, steps)
         using a cache to store the result if the same arguments have been used before.
@@ -493,7 +494,7 @@ class StableDiffusionProcessing:
         # print("imu_encoder in get_conds_with_caching:", imu_encoder)
 
         with devices.autocast():
-            cache[1] = function(shared.sd_model, required_prompts, steps, hires_steps, shared.opts.use_old_scheduling, imu_data, imu_encoder)
+            cache[1] = function(shared.sd_model, required_prompts, steps, hires_steps, shared.opts.use_old_scheduling, imu_data, imu_encoder, imu_ratio)
 
         cache[0] = cached_params
         return cache[1]
@@ -513,7 +514,7 @@ class StableDiffusionProcessing:
 
         self.uc = self.get_conds_with_caching(prompt_parser.get_learned_conditioning, negative_prompts, total_steps, [self.cached_uc], self.extra_network_data)
         self.c = self.get_conds_with_caching(prompt_parser.get_multicond_learned_conditioning, prompts, total_steps, [self.cached_c], self.extra_network_data, 
-                                             imu_data=self.imu_input, imu_encoder=self.imu_encoder)
+                                             imu_data=self.imu_input, imu_encoder=self.imu_encoder, imu_ratio=self.imu_ratio)
 
 
     def get_conds(self):

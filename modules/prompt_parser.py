@@ -198,7 +198,7 @@ def get_imu_conditioning(imu_data, imu_encoder):
     return imu_conds
 
 
-def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, hires_steps=None, use_old_scheduling=False, imu_data=None, imu_encoder=None):
+def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, hires_steps=None, use_old_scheduling=False, imu_data=None, imu_encoder=None, imu_ratio=None):
     """converts a list of prompts into a list of prompt schedules - each schedule is a list of ScheduledPromptConditioning, specifying the comdition (cond),
     and the sampling step at which this condition is to be replaced by the next one.
 
@@ -235,7 +235,7 @@ def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, 
         if imu_data is not None:
             print("> IMU data used in generating the conditioning.")
             imu_conds = get_imu_conditioning(imu_data, imu_encoder)
-            conds = imu_conds * 0.2 + conds * 0.8
+            conds = imu_conds * imu_ratio + conds * (1 - imu_ratio)
 
         cond_schedule = []
         for i, (end_at_step, _) in enumerate(prompt_schedule):
@@ -299,7 +299,7 @@ class MulticondLearnedConditioning:
         self.batch: list[list[ComposableScheduledPromptConditioning]] = batch
 
 
-def get_multicond_learned_conditioning(model, prompts, steps, hires_steps=None, use_old_scheduling=False, imu_data=None, imu_encoder=None) -> MulticondLearnedConditioning:
+def get_multicond_learned_conditioning(model, prompts, steps, hires_steps=None, use_old_scheduling=False, imu_data=None, imu_encoder=None, imu_ratio=None) -> MulticondLearnedConditioning:
     """same as get_learned_conditioning, but returns a list of ScheduledPromptConditioning along with the weight objects for each prompt.
     For each prompt, the list is obtained by splitting the prompt using the AND separator.
 
@@ -311,7 +311,7 @@ def get_multicond_learned_conditioning(model, prompts, steps, hires_steps=None, 
     print("imu_data in get_multicond_learned_conditioning:", imu_data)
     # print("imu_encoder in get_multicond_learned_conditioning:", imu_encoder)
 
-    learned_conditioning = get_learned_conditioning(model, prompt_flat_list, steps, hires_steps, use_old_scheduling, imu_data, imu_encoder)
+    learned_conditioning = get_learned_conditioning(model, prompt_flat_list, steps, hires_steps, use_old_scheduling, imu_data, imu_encoder, imu_ratio)
 
     res = []
     for indexes in res_indexes:
