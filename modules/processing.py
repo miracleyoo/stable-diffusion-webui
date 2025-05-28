@@ -143,7 +143,7 @@ class StableDiffusionProcessing:
     prompt: str = ""
     prompt_for_display: str = None
     negative_prompt: str = ""
-    imu_data: str = None
+    imu_input: str = None
     styles: list[str] = None
     seed: int = -1
     subseed: int = -1
@@ -501,7 +501,7 @@ class StableDiffusionProcessing:
     def setup_conds(self):
         prompts = prompt_parser.SdConditioning(self.prompts, width=self.width, height=self.height)
         negative_prompts = prompt_parser.SdConditioning(self.negative_prompts, width=self.width, height=self.height, is_negative_prompt=True)
-        print("imu_data in setup_conds:", self.imu_data)
+        print("imu_data in setup_conds:", self.imu_input)
         print("prompts in setup_conds:", prompts)
         print("negative_prompts in setup_conds:", negative_prompts)
         # print("imu_encoder in setup_conds:", self.imu_encoder)
@@ -513,7 +513,7 @@ class StableDiffusionProcessing:
 
         self.uc = self.get_conds_with_caching(prompt_parser.get_learned_conditioning, negative_prompts, total_steps, [self.cached_uc], self.extra_network_data)
         self.c = self.get_conds_with_caching(prompt_parser.get_multicond_learned_conditioning, prompts, total_steps, [self.cached_c], self.extra_network_data, 
-                                             imu_data=self.imu_data, imu_encoder=self.imu_encoder)
+                                             imu_data=self.imu_input, imu_encoder=self.imu_encoder)
 
 
     def get_conds(self):
