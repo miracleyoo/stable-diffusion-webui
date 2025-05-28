@@ -4,6 +4,10 @@ import re
 from collections import namedtuple
 import lark
 from ImageBind.imagebind.imu.imu_encoder import process_imu_data
+import ast
+import numpy as np
+from scipy.interpolate import interp1d
+
 
 # a prompt like this: "fantasy landscape with a [mountain:lake:0.25] and [an oak:a christmas tree:0.75][ in foreground::0.6][: in background:0.25] [shoddy:masterful:0.5]"
 # will be represented with prompt_schedule like this (assuming steps=100):
@@ -153,8 +157,42 @@ class SdConditioning(list):
         self.width = width or getattr(copy_from, 'width', None)
         self.height = height or getattr(copy_from, 'height', None)
 
+
+def resize_to_target_length(data: np.ndarray, target_len: int = 2000) -> np.ndarray:
+    """
+    Resize a [N, 6] array to [target_len, 6] by interpolation or downsampling.
+
+    Args:
+        data: numpy array of shape [N, 6]
+        target_len: desired number of rows (default: 2000)
+
+    Returns:
+        numpy array of shape [target_len, 6]
+    """
+    N, D = data.shape
+    assert D == 6, "Input must be of shape [N, 6]"
+    orig_x = np.linspace(0, 1, N)
+    target_x = np.linspace(0, 1, target_len)
+
+    result = []
+    for d in range(D):
+        col = data[:, d]
+        if N < target_len:
+            interp_func = interp1d(orig_x, col, kind='linear')
+            resized_col = interp_func(target_x)
+        else:
+            indices = np.linspace(0, N - 1, target_len).astype(int)
+            resized_col = col[indices]
+        result.append(resized_col)
+
+    return np.stack(result, axis=1)  # shape: [target_len, 6]
+
+
 def get_imu_conditioning(imu_data, imu_encoder):
     print("imu_data inner:", imu_data)
+    if type(imu_data) == str:
+        imu_data = np.array(ast.literal_eval(imu_data))
+    imu_data = resize_to_target_length(imu_data)
     # print("imu_encoder inner:", imu_encoder)
     imu_conds = imu_encoder(process_imu_data(imu_data))
     return imu_conds
@@ -193,7 +231,7 @@ def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, 
         texts = SdConditioning([x[1] for x in prompt_schedule], copy_from=prompts)
         conds = model.get_learned_conditioning(texts)
         
-        if imu_data is not None:
+        if imu_data:
             imu_conds = get_imu_conditioning(imu_data, imu_encoder)
             conds = (imu_conds + conds) / 2
 

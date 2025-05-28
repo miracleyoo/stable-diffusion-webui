@@ -23,11 +23,11 @@ def txt2img_create_processing(id_task: str, request: gr.Request, prompt: str, ne
             import numpy as np
             import ast
             # Convert string representation of list/array to actual numpy array
-            imu_array = np.array(ast.literal_eval(imu_input))
-            if len(imu_array.shape) != 2:
-                raise ValueError("IMU data must be a 2D array")
+            imu_input = np.array(ast.literal_eval(imu_input))
+            if len(imu_input.shape) != 2:
+                raise ValueError("IMU data must be a 2D array with shape [N, 6]")
             # Add IMU data to prompt
-            prompt = f"{prompt} [IMU data: {imu_array.tolist()}]"
+            # prompt = f"{prompt} [IMU data: {imu_array.tolist()}]"
         except Exception as e:
             print(f"Error parsing IMU data: {e}")
             # Continue without IMU data if parsing fails
