@@ -180,6 +180,16 @@ class Shared(sys.modules[__name__].__class__):
         import modules.sd_models
 
         modules.sd_models.model_data.set_sd_model(value)
+    
+    @property
+    def imu_encoder(self):
+        from ImageBind.imagebind.imu.imu_encoder import IMUEncoderQuick 
+        return IMUEncoderQuick()
+    
+    @imu_encoder.setter
+    def imu_encoder(self, value): 
+        from ImageBind.imagebind.imu.imu_encoder import IMUEncoderQuick 
+        self.imu_encoder = IMUEncoderQuick(model_name=value)
 
 
 sys.modules['modules.shared'].__class__ = Shared

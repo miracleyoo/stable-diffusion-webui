@@ -7,6 +7,7 @@ from modules import shared_cmd_options, shared_gradio_themes, options, shared_it
 from modules.paths_internal import models_path, script_path, data_path, sd_configs_path, sd_default_config, sd_model_file, default_sd_model_file, extensions_dir, extensions_builtin_dir  # noqa: F401
 from modules import util
 from typing import TYPE_CHECKING
+from ImageBind.imagebind.imu.imu_encoder import IMUEncoderQuick
 
 if TYPE_CHECKING:
     from modules import shared_state, styles, interrogate, shared_total_tqdm, memmon
@@ -45,6 +46,7 @@ opts: options.Options = None
 restricted_opts: set[str] = None
 
 sd_model: sd_models_types.WebuiSdModel = None
+imu_encoder: IMUEncoderQuick = None
 
 settings_components: dict = None
 """assigned from ui.py, a mapping on setting names to gradio components responsible for those settings"""

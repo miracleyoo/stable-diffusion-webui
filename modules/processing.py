@@ -255,7 +255,7 @@ class StableDiffusionProcessing:
         self.cached_uc = StableDiffusionProcessing.cached_uc
         self.cached_c = StableDiffusionProcessing.cached_c
 
-        self.imu_encoder = IMUEncoderQuick()
+        # self.imu_encoder = IMUEncoderQuick()
 
     def fill_fields_from_opts(self):
         self.s_min_uncond = self.s_min_uncond if self.s_min_uncond is not None else opts.s_min_uncond
@@ -267,6 +267,15 @@ class StableDiffusionProcessing:
     @property
     def sd_model(self):
         return shared.sd_model
+    
+    @property
+    def imu_encoder(self):
+        return shared.imu_encoder
+    
+    @imu_encoder.setter
+    def imu_encoder(self, value):
+        pass
+        # shared.imu_encoder = value
 
     @sd_model.setter
     def sd_model(self, value):
