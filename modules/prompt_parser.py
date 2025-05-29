@@ -232,7 +232,7 @@ def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, 
         conds = model.get_learned_conditioning(texts)
         
         # print("> IMU data:", imu_data, "type:", type(imu_data))
-        if imu_data and imu_ratio is not None and imu_ratio > 0:
+        if type(imu_data) == np.ndarray and imu_data.size > 0 and imu_ratio is not None and imu_ratio > 0:
             print("> IMU data used in generating the conditioning. Imu ratio:", imu_ratio)
             imu_conds = get_imu_conditioning(imu_data, imu_encoder)
             conds = imu_conds * imu_ratio + conds * (1 - imu_ratio)
