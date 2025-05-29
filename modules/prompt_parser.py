@@ -189,8 +189,8 @@ def resize_to_target_length(data: np.ndarray, target_len: int = 2000) -> np.ndar
 
 
 def get_imu_conditioning(imu_data, imu_encoder):
-    # print("imu_data inner:", imu_data)
-    if type(imu_data) == str:
+    print("imu_data inner:", imu_data)
+    if type(imu_data) == str and imu_data != "":
         imu_data = np.array(ast.literal_eval(imu_data))
     imu_data = resize_to_target_length(imu_data)
     # print("imu_encoder inner:", imu_encoder)
@@ -232,7 +232,7 @@ def get_learned_conditioning(model, prompts: SdConditioning | list[str], steps, 
         conds = model.get_learned_conditioning(texts)
         
         # print("> IMU data:", imu_data, "type:", type(imu_data))
-        if imu_data is not None and imu_ratio is not None and imu_ratio > 0:
+        if imu_data and imu_ratio is not None and imu_ratio > 0:
             print("> IMU data used in generating the conditioning. Imu ratio:", imu_ratio)
             imu_conds = get_imu_conditioning(imu_data, imu_encoder)
             conds = imu_conds * imu_ratio + conds * (1 - imu_ratio)

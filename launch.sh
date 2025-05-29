@@ -28,6 +28,9 @@ if [[ $venv_dir == "-" ]]; then
   use_venv=0
 fi
 
+source .venv/bin/activate
+uv sync
+
 # Set defaults
 # Install directory without trailing slash
 if [[ -z "${install_dir}" ]]
