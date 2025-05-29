@@ -487,9 +487,11 @@ class StableDiffusionProcessing:
         cached_params = self.cached_params(required_prompts, steps, extra_network_data, hires_steps, shared.opts.use_old_scheduling, imu_ratio, imu_data)
 
         for cache in caches:
-            if cache[0] is not None and cached_params == cache[0]:
-                return cache[1]
-
+            try:
+                if cache[0] is not None and cached_params == cache[0]:
+                    return cache[1]
+            except Exception as e:
+                pass
         cache = caches[0]
 
         # print("imu_data in get_conds_with_caching:", imu_data)
