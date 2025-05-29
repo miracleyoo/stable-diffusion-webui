@@ -189,7 +189,7 @@ def resize_to_target_length(data: np.ndarray, target_len: int = 2000) -> np.ndar
 
 
 def get_imu_conditioning(imu_data, imu_encoder):
-    print("imu_data inner:", imu_data)
+    # print("imu_data inner:", imu_data)
     if type(imu_data) == str and imu_data != "":
         imu_data = np.array(ast.literal_eval(imu_data))
     imu_data = resize_to_target_length(imu_data)
